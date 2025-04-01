@@ -1,17 +1,15 @@
 import pandas as pd
 import numpy as np
 import scipy.stats as stats
-import matplotlib.pyplot as plt
-import seaborn as sns
 
 class GeneExpressionAnalyzer:
     def __init__(self, csv_file_path):
-
+        
         self.data = pd.read_csv(csv_file_path, index_col=0)
         
         self.gene_names = self.data.index.tolist()
         self.patient_names = self.data.columns.tolist()
-    
+        
     def z_test_gene(self, gene_expression, threshold=4):
 
         gene_array = np.array(gene_expression)
@@ -45,27 +43,9 @@ class GeneExpressionAnalyzer:
         
         return pd.DataFrame(results)
     
-    def plot_gene_correlation(self, gene1_name, gene2_name):
-
-        gene1_expression = self.data.loc[gene1_name].values
-        gene2_expression = self.data.loc[gene2_name].values
-        
-        plt.figure(figsize=(10, 6))
-        sns.scatterplot(x=gene1_expression, y=gene2_expression)
-        
-        sns.regplot(x=gene1_expression, y=gene2_expression, scatter=False, line_kws={"color": "red"})
-        
-        correlation = np.corrcoef(gene1_expression, gene2_expression)[0, 1]
-        
-        plt.xlabel(f"{gene1_name} Expression")
-        plt.ylabel(f"{gene2_name} Expression")
-        plt.title(f"Correlation between {gene1_name} and {gene2_name} Expression\nCorrelation Coefficient: {correlation:.3f}")
-        
-        plt.grid(True, alpha=0.3)
-        
-        return plt.gcf()
-
-analyzer = GeneExpressionAnalyzer('data.csv')
-plt.figure()
-analyzer.plot_gene_correlation('gene1', 'gene2')
-plt.show()
+    
+analyzer = GeneExpressionAnalyzer('technical_data/1_c_d.csv')
+results = analyzer.analyze_all_genes(threshold=4)
+print("\nGene Expression Analysis Results:")
+print("=================================")
+print(results.to_string())
